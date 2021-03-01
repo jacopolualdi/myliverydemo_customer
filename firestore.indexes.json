@@ -1,0 +1,51 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "Orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "custDetails.uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "orderTimestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "orderStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "orderTimestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "orderStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "refundStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "orderTimestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
