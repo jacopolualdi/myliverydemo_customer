@@ -500,6 +500,24 @@ class _SignInScreenState extends State<SignInScreen> {
                   SizedBox(
                     height: 20.0,
                   ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/reset_password');
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor
+                        ),
+
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
                   buildSignInButton(size, context),
                   SizedBox(
                     height: 20.0,

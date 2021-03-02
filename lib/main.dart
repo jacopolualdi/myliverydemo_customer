@@ -30,6 +30,7 @@ import 'package:grocery_store/screens/cart_screen.dart';
 import 'package:grocery_store/screens/checkout_screen.dart';
 import 'package:grocery_store/screens/my_orders_screen.dart';
 import 'package:grocery_store/screens/onboarding_screen.dart';
+import 'package:grocery_store/screens/password_reset_screen.dart';
 import 'package:grocery_store/screens/product_screen.dart';
 import 'package:grocery_store/screens/sign_in_screen.dart';
 import 'package:grocery_store/screens/sign_up_screen.dart';
@@ -225,6 +226,7 @@ class MyApp extends StatelessWidget {
         '/add_card': (context) => AddCardScreen(),
         '/card_payment': (context) => CardPaymentScreen(),
         '/my_orders': (context) => MyOrdersScreen(),
+        '/reset_password': (context) => PasswordResetScreen(),
       },
     );
   }
