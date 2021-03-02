@@ -162,6 +162,49 @@ class AuthenticationProvider extends BaseAuthenticationProvider {
   }
 
   @override
+  Future<User> signUpWithEmail(String email, String password) async {
+    // TODO: implement signUpWithEmail
+    try {
+     await firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      return firebaseAuth.currentUser;
+
+    } catch (e) {
+      print(e);
+      return null;
+    }
+
+
+
+  }
+
+  @override
+  Future<String> signInWithEmail(String email, String password) async {
+    // TODO: implement signInWithEmail
+     await firebaseAuth.signInWithEmailAndPassword(email: email , password: password);
+   User user = firebaseAuth.currentUser;
+
+     DocumentSnapshot snapshot =
+     await db.collection(Paths.usersPath).doc(user.uid).get();
+
+     if (snapshot.exists) {
+       if (snapshot.data()['isBlocked']) {
+         await googleSignIn.signOut();
+         await firebaseAuth.signOut();
+         return 'Questo account è stato bloccato.';
+       }
+     } else {
+       await googleSignIn.signOut();
+       await firebaseAuth.signOut();
+       return 'Questo account non esiste.';
+     }
+
+     return '';
+
+
+  }
+
+  @override
   Future<String> signInWithGoogle() async {
     final GoogleSignInAccount account = await googleSignIn.signIn();
     final GoogleSignInAuthentication authentication =

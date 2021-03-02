@@ -27,14 +27,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   MaskedTextController mobileNoController;
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  String mobileNo, email, name;
+  String mobileNo, email, name, password;
   bool inProgress;
   bool appleinProgress;
+  bool emailinProgress;
   String prefixCode = '+39';
 
   @override
@@ -42,6 +44,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.initState();
     inProgress = false;
     appleinProgress = false;
+    emailinProgress = false;
 
     mobileNoController = MaskedTextController(mask: '0000000000');
     signupBloc = BlocProvider.of<SignupBloc>(context);
@@ -72,6 +75,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
           } else {
             setState(() {
               inProgress = false;
+            });
+            signupBloc.close();
+            Provider.of<StateProvider>(context, listen: false)
+                .changeLoggedIn(true);
+            Navigator.popAndPushNamed(context, '/home');
+          }
+        });
+      }
+      if (state is SignupWithEmailInitialCompleted) {
+        //proceed to save details
+
+
+        db
+            .collection(Paths.usersPath)
+            .doc(state.firebaseUser.uid)
+            .get()
+            .then((doc) {
+          if (!doc.exists) {
+            signupBloc.add(SaveUserDetails(
+              name: name,
+              mobileNo: '',
+              email: email,
+              firebaseUser: state.firebaseUser,
+              loggedInVia: 'EMAIL',
+            ));
+          } else {
+            setState(() {
+              emailinProgress = false;
             });
             signupBloc.close();
             Provider.of<StateProvider>(context, listen: false)
@@ -119,6 +150,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         });
       }
 
+      if (state is SignupWithEmailInitialFailed) {
+        //failed to sign in with email
+        print('failed to sign in with email');
+        showFailedSnakbar("Accesso non riuscito, prova a utilizzare un'altra email");
+        setState(() {
+          emailinProgress = false;
+        });
+      }
+
       if (state is SignupWithAppleInitialFailed) {
         //failed to sign in with google
         print('failed to sign in with apple');
@@ -158,6 +198,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void dispose() {
     super.dispose();
     // signupBloc.close();
+  }
+
+  signUpWithEmail() {
+    if (_formKey.currentState.validate()) {
+      //proceed
+      _formKey.currentState.save();
+      // signupBloc.add(
+      //     SignupWithMobileNo(email: email, mobileNo: mobileNo, name: name));
+
+     signupBloc.add(SignupWithEmail(email, password));
+     setState(() {
+       emailinProgress = true;
+     });
+    }
   }
 
   signUpWithMobileNo() {
@@ -361,84 +415,84 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 20.0,
-                        ),
-                        TextFormField(
-                          controller: mobileNoController,
-                          textAlignVertical: TextAlignVertical.center,
-                          validator: (String val) {
-                            if (val.isEmpty) {
-                              return 'Per favore, inserisci un Numero Cellulare';
-                            }
-                            // else if (val.length != 10) {
-                            //   return 'Mobile No. is invalid';
-                            // }
-                            return null;
-                          },
-                          onSaved: (val) {
-                            mobileNo = val;
-                          },
-                          enableInteractiveSelection: false,
-                          style: GoogleFonts.poppins(
-                            color: Colors.black,
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.5,
-                          ),
-                          textInputAction: TextInputAction.done,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(0),
-                            helperStyle: GoogleFonts.poppins(
-                              color: Colors.black.withOpacity(0.65),
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.5,
-                            ),
-                            prefix: CountryCodePicker(
-                                initialSelection: '+39',
-                                showDropDownButton: true,
-                                showFlag: false,
-                                onChanged: (value) {
-                                  setState(() {
-                                    prefixCode = value.dialCode;
-                                    print(prefixCode);
-                                  });
-                                }),
-                            // prefixText: '${Config().countryMobileNoPrefix} ',
-                            prefixStyle: GoogleFonts.poppins(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14.5,
-                            ),
-                            errorStyle: GoogleFonts.poppins(
-                              fontSize: 13.0,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.5,
-                            ),
-                            hintStyle: GoogleFonts.poppins(
-                              color: Colors.black54,
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.5,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.phone,
-                            ),
-                            prefixIconConstraints: BoxConstraints(
-                              minWidth: 50.0,
-                            ),
-                            labelText: 'Numero Cellulare',
-                            labelStyle: GoogleFonts.poppins(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.5,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 20.0,
+                        // ),
+                        // TextFormField(
+                        //   controller: mobileNoController,
+                        //   textAlignVertical: TextAlignVertical.center,
+                        //   validator: (String val) {
+                        //     if (val.isEmpty) {
+                        //       return 'Per favore, inserisci un Numero Cellulare';
+                        //     }
+                        //     // else if (val.length != 10) {
+                        //     //   return 'Mobile No. is invalid';
+                        //     // }
+                        //     return null;
+                        //   },
+                        //   onSaved: (val) {
+                        //     mobileNo = val;
+                        //   },
+                        //   enableInteractiveSelection: false,
+                        //   style: GoogleFonts.poppins(
+                        //     color: Colors.black,
+                        //     fontSize: 14.5,
+                        //     fontWeight: FontWeight.w500,
+                        //     letterSpacing: 0.5,
+                        //   ),
+                        //   textInputAction: TextInputAction.done,
+                        //   keyboardType: TextInputType.number,
+                        //   decoration: InputDecoration(
+                        //     contentPadding: EdgeInsets.all(0),
+                        //     helperStyle: GoogleFonts.poppins(
+                        //       color: Colors.black.withOpacity(0.65),
+                        //       fontWeight: FontWeight.w500,
+                        //       letterSpacing: 0.5,
+                        //     ),
+                        //     prefix: CountryCodePicker(
+                        //         initialSelection: '+39',
+                        //         showDropDownButton: true,
+                        //         showFlag: false,
+                        //         onChanged: (value) {
+                        //           setState(() {
+                        //             prefixCode = value.dialCode;
+                        //             print(prefixCode);
+                        //           });
+                        //         }),
+                        //     // prefixText: '${Config().countryMobileNoPrefix} ',
+                        //     prefixStyle: GoogleFonts.poppins(
+                        //       color: Colors.black87,
+                        //       fontWeight: FontWeight.w500,
+                        //       fontSize: 14.5,
+                        //     ),
+                        //     errorStyle: GoogleFonts.poppins(
+                        //       fontSize: 13.0,
+                        //       fontWeight: FontWeight.w500,
+                        //       letterSpacing: 0.5,
+                        //     ),
+                        //     hintStyle: GoogleFonts.poppins(
+                        //       color: Colors.black54,
+                        //       fontSize: 14.5,
+                        //       fontWeight: FontWeight.w500,
+                        //       letterSpacing: 0.5,
+                        //     ),
+                        //     prefixIcon: Icon(
+                        //       Icons.phone,
+                        //     ),
+                        //     prefixIconConstraints: BoxConstraints(
+                        //       minWidth: 50.0,
+                        //     ),
+                        //     labelText: 'Numero Cellulare',
+                        //     labelStyle: GoogleFonts.poppins(
+                        //       fontSize: 14.5,
+                        //       fontWeight: FontWeight.w500,
+                        //       letterSpacing: 0.5,
+                        //     ),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(12.0),
+                        //     ),
+                        //   ),
+                        // ),
                         SizedBox(
                           height: 20.0,
                         ),
@@ -503,6 +557,68 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        TextFormField(
+                          controller: passwordController,
+                          textAlignVertical: TextAlignVertical.center,
+                          validator: (String val) {
+                            if (val.trim().isEmpty) {
+                              return 'Per favore inserire una password';
+                            }
+                            if (val.trim().length < 8) {
+                              return 'la password dovrebbe essere almeno 8';
+                            }
+                            return null;
+                          },
+                          onSaved: (val) {
+                            password = val;
+                          },
+                          enableInteractiveSelection: false,
+                          style: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
+                          ),
+                          textInputAction: TextInputAction.done,
+
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.all(0),
+                            helperStyle: GoogleFonts.poppins(
+                              color: Colors.black.withOpacity(0.65),
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.5,
+                            ),
+                            errorStyle: GoogleFonts.poppins(
+                              fontSize: 13.0,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.5,
+                            ),
+                            hintStyle: GoogleFonts.poppins(
+                              color: Colors.black54,
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.5,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.vpn_key_rounded,
+                            ),
+                            prefixIconConstraints: BoxConstraints(
+                              minWidth: 50.0,
+                            ),
+                            labelText: "parola d'ordine",
+                            labelStyle: GoogleFonts.poppins(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.5,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -523,13 +639,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 20.0,
                   ),
                   Center(
-                    child: Container(
+                    child: emailinProgress ? CircularProgressIndicator() : Container(
                       width: size.width,
                       height: 48.0,
                       child: FlatButton(
                         onPressed: () {
                           //validate inputs
-                          signUpWithMobileNo();
+                          signUpWithEmail();
+
+
                         },
                         color: Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(

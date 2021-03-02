@@ -23,6 +23,11 @@ class SigninBloc extends Bloc<SigninEvent, SigninState> {
     if (event is SignInWithGoogle) {
       yield* mapSignInWithGoogleToState();
     }
+    if (event is SignInWithEmail) {
+      yield* mapSignInWithEmailToState(event.email, event.password);
+    }
+
+
     if (event is SignInWithApple) {
       yield* mapSignInWithAppleToState();
     }
@@ -59,6 +64,22 @@ class SigninBloc extends Bloc<SigninEvent, SigninState> {
     } catch (e) {
       print(e);
       yield SigninWithGoogleFailed();
+    }
+  }
+
+  Stream<SigninState> mapSignInWithEmailToState(String email, String password) async* {
+    yield SignInWithEmailInProgress();
+
+    try {
+      String res = await authenticationRepository.signInWithEmail(email, password);
+      if (res != null) {
+        yield SigninWithEmailCompleted(res);
+      } else {
+        yield SigninWithEmailFailed();
+      }
+    } catch (e) {
+      print(e);
+      yield SigninWithEmailFailed();
     }
   }
 

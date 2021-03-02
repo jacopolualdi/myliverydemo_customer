@@ -30,7 +30,14 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       yield* mapSignupWithMobileNoEventToState(
         mobileNo: event.mobileNo,
       );
-    } else if (event is SignupWithApple) {
+    }
+    else if (event is SignupWithEmail) {
+      yield* mapSignupWithEmailEventToState(
+        event.email, event.password
+      );
+    }
+
+    else if (event is SignupWithApple) {
       yield* mapSignupWithAppleEventToState();
     } else if (event is SignupWithGoogle) {
       yield* mapSignupWithGoogleEventToState();
@@ -115,6 +122,22 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     } catch (e) {
       print(e);
       yield SignupWithGoogleInitialFailed();
+    }
+  }
+
+  Stream<SignupState> mapSignupWithEmailEventToState(String email, String password) async* {
+    yield SignUpInProgress();
+
+    try {
+      User firebaseUser = await authenticationRepository.signUpWithEmail(email, password);
+      if (firebaseUser != null) {
+        yield SignupWithEmailInitialCompleted(firebaseUser);
+      } else {
+        yield SignupWithEmailInitialFailed();
+      }
+    } catch (e) {
+      print(e);
+      yield SignupWithEmailInitialFailed();
     }
   }
 

@@ -22,6 +22,15 @@ class SignupWithGoogleInitialCompleted extends SignupState {
   String toString() => 'SignupWithGoogleInitialCompletedState';
 }
 
+class SignupWithEmailInitialCompleted extends SignupState {
+  final User firebaseUser;
+
+  SignupWithEmailInitialCompleted(this.firebaseUser);
+
+  @override
+  String toString() => 'SignupWithEmailInitialCompletedState';
+}
+
 class SignupWithAppleInitialCompleted extends SignupState {
   final User firebaseUser;
 
@@ -39,6 +48,11 @@ class SignupWithGoogleInitialFailed extends SignupState {
 class SignupWithAppleInitialFailed extends SignupState {
   @override
   String toString() => 'SignupWithAppleInitialFailedState';
+}
+
+class SignupWithEmailInitialFailed extends SignupState {
+  @override
+  String toString() => 'SignupWithEmailInitialFailedState';
 }
 
 class SignupWithMobileCompleted extends SignupState {

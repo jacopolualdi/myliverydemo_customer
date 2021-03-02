@@ -13,6 +13,13 @@ class SignInWithGoogleInProgress extends SigninState {
   String toString() => 'SignInWithGoogleInProgressState';
 }
 
+class SignInWithEmailInProgress extends SigninState {
+  @override
+  String toString() => 'SignInWithEmailInProgressState';
+}
+
+
+
 class SignInWithAppleInProgress extends SigninState {
   @override
   String toString() => 'SignInWithAppleInProgressState';
@@ -31,6 +38,14 @@ class SigninWithGoogleCompleted extends SigninState {
   String toString() => 'SigninWithGoogleCompletedState';
 }
 
+class SigninWithEmailCompleted extends SigninState {
+  final String result;
+  SigninWithEmailCompleted(this.result);
+
+  @override
+  String toString() => 'SigninWithEmailCompletedState';
+}
+
 class SigninWithAppleCompleted extends SigninState {
   final String result;
   SigninWithAppleCompleted(this.result);
@@ -47,6 +62,11 @@ class SigninWithMobileNoCompleted extends SigninState {
 class SigninWithGoogleFailed extends SigninState {
   @override
   String toString() => 'SigninWithGoogleFailedState';
+}
+
+class SigninWithEmailFailed extends SigninState {
+  @override
+  String toString() => 'SigninWithEmailFailedState';
 }
 
 class SigninWithAppleFailed extends SigninState {

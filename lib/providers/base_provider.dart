@@ -23,11 +23,14 @@ abstract class BaseAuthenticationProvider extends BaseProvider {
   Future<String> signInWithApple();
   Future<User> signUpWithApple();
   Future<User> signUpWithGoogle();
+  Future<User> signUpWithEmail(String email, String password);
+  Future<String> signInWithEmail(String email, String password);
   Future<bool> signInWithMobileNo(String mobileNo);
   Future<String> checkIfBlocked(String mobileNo);
   Future<User> signInWithSmsCode(String smsCode);
   Future<bool> signOutUser();
   Future<User> getCurrentUser();
+
 }
 
 abstract class BaseUserDataProvider extends BaseProvider {

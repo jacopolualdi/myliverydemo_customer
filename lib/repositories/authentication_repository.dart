@@ -16,6 +16,10 @@ class AuthenticationRepository extends BaseRepository {
 
   Future<String> signInWithApple() => authenticationProvider.signInWithApple();
 
+  Future<String> signInWithEmail(String email, String password) => authenticationProvider.signInWithEmail( email, password);
+
+  Future<User> signUpWithEmail(String email, String password) => authenticationProvider.signUpWithEmail( email, password);
+
   Future<User> signUpWithApple() => authenticationProvider.signUpWithApple();
 
   Future<User> signUpWithGoogle() => authenticationProvider.signUpWithGoogle();

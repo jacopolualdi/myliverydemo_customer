@@ -13,6 +13,17 @@ class SignInWithApple extends SigninEvent {
   String toString() => 'SignInWithAppleEvent';
 }
 
+class SignInWithEmail extends SigninEvent {
+  final String email;
+  final String password;
+
+  SignInWithEmail(this.email, this.password);
+
+
+  @override
+  String toString() => 'SignInWithEmailEvent';
+}
+
 class SignInWithMobileNo extends SigninEvent {
   final String mobileNo;
 

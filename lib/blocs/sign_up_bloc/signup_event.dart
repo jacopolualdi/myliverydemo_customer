@@ -23,6 +23,18 @@ class SignupWithGoogle extends SignupEvent {
   String toString() => 'SignupWithGoogleEvent';
 }
 
+class SignupWithEmail extends SignupEvent {
+
+  final String email;
+  final String password;
+
+  SignupWithEmail(this.email, this.password);
+
+  @override
+  String toString() => 'SignupWithEmailEvent';
+
+}
+
 class SignupWithApple extends SignupEvent {
   @override
   String toString() => 'SignupWithAppleEvent';
